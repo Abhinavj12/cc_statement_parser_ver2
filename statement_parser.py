@@ -6,6 +6,7 @@ from typing import List, Dict, Tuple
 from parsers.hdfc_parser import HDFCParser
 from parsers.sbi_parser import SBIParser
 from parsers.credit_card_parser import CreditCardParser
+from parsers.amex_parser import AMEXParser
 
 
 def extract_text_from_pdf(path: str) -> str:
@@ -42,16 +43,27 @@ def extract_text_from_pdf(path: str) -> str:
 def detect_bank(text: str) -> str:
     """Detect which bank the statement belongs to"""
     t = text.upper()
+
+    # HDFC - Credit Card
     if "HDFC" in t and ("CREDIT CARD" in t or "CARD NO" in t):
         return "HDFC"
+
+    # SBI - Savings Account
     if "STATE BANK OF INDIA" in t or ("SBI" in t and "ACCOUNT" in t):
         return "SBI"
+
+    # ICICI - Credit Card
     if "ICICI BANK" in t and "CREDIT CARD" in t:
         return "ICICI"
+
+    # Axis - Credit Card
     if "AXIS BANK" in t and "CREDIT CARD" in t:
         return "AXIS"
+
+    # AMEX - Credit Card
     if "AMERICAN EXPRESS" in t or "AMEX" in t:
         return "AMEX"
+
     return "UNKNOWN"
 
 
@@ -93,11 +105,10 @@ def parse_statement_file(path: str, export_csv: bool = True, csv_path: str = Non
         summary, transactions = parser.parse(text)
         result.update(summary)
 
-    # Add more banks here:
-    # elif bank == "AMEX":
-    #     parser = AMEXParser()
-    #     summary, transactions = parser.parse(text)
-    #     result.update(summary)
+    elif bank == "AMEX":
+        parser = AMEXParser()
+        summary, transactions = parser.parse(text)
+        result.update(summary)
 
     else:
         raise Exception(f"Unsupported bank: {bank}. Please add parser for this bank.")
