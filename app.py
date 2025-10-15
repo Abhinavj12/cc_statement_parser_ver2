@@ -28,6 +28,7 @@ if uploaded:
         except Exception as e:
             st.error(f"❌ Parsing failed: {e}")
             import traceback
+
             st.code(traceback.format_exc())
             st.stop()
 
@@ -122,7 +123,10 @@ if uploaded:
 
         with col3:
             st.write("**📅 Payment Due:**", result.get('Payment Due Date', '—'))
-            st.write("**💰 Total Due:**", f"₹ {result.get('Total Amount Due', 0):,.2f}")
+            total_due = result.get('Total Amount Due', 0)
+            if isinstance(total_due, str):
+                total_due = float(total_due) if total_due else 0.0
+            st.write("**💰 Total Due:**", f"₹ {total_due:,.2f}")
 
         # Account Summary
         st.markdown("---")
@@ -131,14 +135,24 @@ if uploaded:
 
         with col1:
             prev_bal = result.get('Previous Balance', 0)
+            if isinstance(prev_bal, str):
+                prev_bal = float(prev_bal) if prev_bal else 0.0
             st.metric("Previous Balance", f"₹ {prev_bal:,.2f}")
+
             new_charges = result.get('New Charges', 0)
+            if isinstance(new_charges, str):
+                new_charges = float(new_charges) if new_charges else 0.0
             st.metric("New Charges", f"₹ {new_charges:,.2f}")
 
         with col2:
             payment = result.get('Payment Received', 0)
+            if isinstance(payment, str):
+                payment = float(payment) if payment else 0.0
             st.metric("Payment Received", f"₹ {payment:,.2f}" if payment else "—")
+
             stmt_bal = result.get('Statement Balance', 0)
+            if isinstance(stmt_bal, str):
+                stmt_bal = float(stmt_bal) if stmt_bal else 0.0
             st.metric("Statement Balance", f"₹ {stmt_bal:,.2f}")
 
     # ===== AMEX Credit Card =====
@@ -154,8 +168,10 @@ if uploaded:
             st.write("**📅 Statement Period:**", result.get('Statement Period', '—'))
 
         with col3:
-            st.write("**📅 Due Date:**", result.get('Due Date', '—'))
-            st.write("**💰 Amount Due:**", f"${result.get('Amount Due', 0):,.2f}")
+            amount_due = result.get('Amount Due', 0)
+            if isinstance(amount_due, str):
+                amount_due = float(amount_due) if amount_due else 0.0
+            st.write("**💰 Amount Due:**", f"${amount_due:,.2f}")
 
         # Account Summary
         st.markdown("---")
@@ -164,14 +180,20 @@ if uploaded:
 
         with col1:
             prev_bal = result.get('Previous Balance', 0)
+            if isinstance(prev_bal, str):
+                prev_bal = float(prev_bal) if prev_bal else 0.0
             st.metric("Previous Balance", f"${prev_bal:,.2f}")
 
         with col2:
             payments = result.get('Payments', 0)
+            if isinstance(payments, str):
+                payments = float(payments) if payments else 0.0
             st.metric("Payments", f"${payments:,.2f}" if payments else "—")
 
         with col3:
             new_charges = result.get('New Charges', 0)
+            if isinstance(new_charges, str):
+                new_charges = float(new_charges) if new_charges else 0.0
             st.metric("New Charges", f"${new_charges:,.2f}")
 
     else:
@@ -220,6 +242,9 @@ if uploaded:
 
             total_transactions = result.get('Total Transactions', 0)
             total_amount = result.get('Total Amount', 0)
+
+            if isinstance(total_amount, str):
+                total_amount = float(total_amount) if total_amount else 0.0
 
             with col1:
                 st.metric("Total Transactions", total_transactions)
