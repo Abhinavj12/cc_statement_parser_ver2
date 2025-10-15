@@ -33,163 +33,100 @@ cc_statement_parser/
     ├── HDFC-credit-card-statement_transactions.csv
     ├── ICICI_complex_statement_transactions.csv
     ├── etc...
-Multi-Bank Statement Parser
-A powerful Python application that automatically extracts summary information and transaction details from credit card and bank account statements in PDF format. Supports multiple Indian and international banks with a clean, interactive web interface.
-Features
 
-Multi-Bank Support: Parse statements from ICICI, Axis, SBI, HDFC, and American Express
-Automatic Bank Detection: Intelligently detects which bank based on statement content
-Transaction Extraction: Automatically extracts all transactions with dates, descriptions, and amounts
-CSV Export: Download transaction data as CSV for further analysis
-Web Interface: User-friendly Streamlit interface with real-time parsing
-Flexible Parsing: Handles multiple PDF text extraction methods for reliability
-Bank-Specific Display: Tailored UI for each bank type showing relevant financial data
+# 💳 Multi-Bank Statement Parser
 
-Using the Web Interface
+A powerful **Streamlit-based Python application** that automatically extracts, summarizes, and displays data from **bank and credit card statements (PDFs)**.  
+Supports multiple **Indian and international banks**, providing a unified dashboard for financial insights.
 
-Upload PDF: Click "Browse files" or drag-and-drop a bank statement PDF
-View Results: Summary information appears automatically
-Review Transactions: Table displays all extracted transactions
-Download CSV: Click the download button to export transactions as CSV
+---
 
-How It Works
-PDF Text Extraction
-The parser uses multiple fallback methods for robust text extraction:
+## 🏦 Supported Banks
 
-pdfplumber - Primary method for accurate text extraction
-PyPDF2 - Secondary fallback
-Raw file reading - Last resort for problematic PDFs
+- **ICICI Bank**
+- **Axis Bank**
+- **HDFC Bank**
+- **SBI (Savings Account)**
+- **American Express**
 
-Bank Detection
-Automatically identifies the bank by scanning for:
+---
 
-Bank names (HDFC, ICICI, Axis, SBI, American Express)
-Statement keywords (Credit Card, Account, etc.)
-Specific formatting patterns
+## ✨ Key Features
 
-Transaction Parsing
-Each bank parser:
+✅ **Multi-Bank Support** — Automatically detects and parses statements from major banks.  
+✅ **Automatic Bank Detection** — Identifies bank type using keywords and formatting.  
+✅ **Transaction Extraction** — Extracts all transactions with date, description, and amount.  
+✅ **CSV Export** — Download transactions for further analysis.  
+✅ **Web Interface** — Simple, responsive Streamlit UI for quick viewing.  
+✅ **Flexible Parsing** — Handles both digital and scanned statements using multiple extraction methods.  
+✅ **Bank-Specific Display** — Tailored UI showing relevant financial details.
 
-Extracts transaction dates (multiple date formats supported)
-Parses descriptions and amounts
-Identifies transaction types (Credit/Debit)
-Calculates totals and summaries
-Handles currency conversions (₹ and $)
+---
 
-Extracted Data
-Common Fields (All Banks)
+## 🖥️ Web Interface – How to Use
 
-Bank name
-Statement date/period
-Payment due date
-Total amount due
-Transactions with dates, descriptions, and amounts
+1. **Run the App**
+   ```bash
+   streamlit run app.py
+Upload a Statement
 
-Bank-Specific Fields
-ICICI/Axis/HDFC:
+Click Browse files or drag and drop a .pdf bank statement.
 
-Card name and last 4 digits
-Card holder name
-Previous balance
-Payment received
-New charges
-Statement balance
-Minimum amount due
+View Results
 
-SBI:
+Summary cards show important details like total amount due, payment received, etc.
 
-Account holder name
-Account number
-Branch
-Opening balance
-Closing balance
-Total credits/debits
-Net change
+Review Transactions
 
-AMEX:
+All parsed transactions appear in a sortable and filterable table.
 
-Member name
-Account number
-Statement period
-Previous balance
-Payments made
-New charges
+Download CSV
 
-File Format Requirements
+Export the transactions by clicking Download CSV.
 
-Format: PDF (.pdf)
-Max Size: 200MB
-Recommended: Scanned or digital bank statements
-Language: English
+⚙️ How It Works
+🧾 PDF Text Extraction
 
-Error Handling
-The application handles:
+Uses multiple fallback methods for robust text reading:
 
-Corrupted or password-protected PDFs
-Missing or poorly formatted fields
-Multiple date formats
-Currency symbol variations
-Encoding issues
+pdfplumber — Primary extraction method for accurate results.
 
-If parsing fails, the application displays:
+PyPDF2 — Fallback for PDFs with layout issues.
 
-Clear error message
-Python traceback for debugging
-Suggested troubleshooting steps
+Raw reading — Last resort for edge cases.
 
-Troubleshooting
-"Unsupported bank" Error
+🔍 Bank Detection
 
-Ensure the PDF is a valid bank statement
-Check that the bank name appears in the supported list
-Verify the PDF contains expected statement elements
+The parser auto-detects the bank by scanning for:
 
-"No transactions detected"
+Bank names (e.g., HDFC, ICICI, Axis, SBI, AMEX)
 
-The PDF may use unusual formatting
-Try uploading a different statement
-Check the DEBUG panel for extracted text
+Keywords (Credit Card, Account, Statement)
 
-Missing Fields
+Unique formatting patterns
 
-Some fields may be optional (not all statements contain all info)
-Use the DEBUG panel to see what was extracted
-The application displays "—" for missing fields
+🧮 Transaction Parsing
 
-Sample Files
-Test files are included in the samples/ folder:
+Each bank-specific parser:
 
-391657900-SBI-statement-sample.pdf - SBI savings account
-Axis_complex_statement.pdf - Axis credit card
-HDFC-credit-card-statement.pdf - HDFC credit card
-ICICI_complex_statement.pdf - ICICI credit card
-amex_statement.pdf - American Express statement
+Extracts dates, descriptions, and amounts
 
-Security & Privacy
+Detects Debit/Credit transactions
 
-PDFs are processed locally on your machine
-No data is sent to external servers
-Temporary files are cleaned up automatically
-CSV exports are saved locally only
+Calculates summary totals
 
-Output Formats
-Web Display
+Handles multiple date formats
 
-Summary cards with key information
-Transaction table with sorting/filtering
-Analysis charts and statistics
-Bank-specific customized layouts
+Supports both ₹ and $ currency symbols
 
-CSV Export
-Includes columns:
+📊 Extracted Data
 
-Date
-Type (Debit/Credit)
-Description
-Amount
-Bank-specific fields
+Common Fields (All Banks):
 
+Bank Name
 
+Statement Date / Period
 
+Total / Minimum Amount Due
 
-
+Transactions (Date, Description, Amount)
