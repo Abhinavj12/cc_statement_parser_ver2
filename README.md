@@ -5,34 +5,7 @@ Home Page
 
 <img width="1876" height="891" alt="image" src="https://github.com/user-attachments/assets/b74123ab-2120-40a8-a432-896fbba6c450" />
 
-cc_statement_parser/
-│
-├── .venv/                          # Virtual environment (ignore)
-│
-├── parsers/                        # All parser modules
-│   ├── __init__.py                 # Empty file (makes it a package)
-│   ├── hdfc_parser.py              # HDFC credit card parser
-│   ├── sbi_parser.py               # SBI savings account parser
-│   ├── credit_card_parser.py       # ICICI & Axis unified parser
-│   └── amex_parser.py              # American Express parser
-│
-├── samples/                        # Sample PDF files for testing
-│   ├── 391657900-SBI-statement-sample.pdf
-│   ├── amex_statement.pdf
-│   ├── Axis_complex_statement.pdf
-│   ├── HDFC-credit-card-statement.pdf
-│   └── ICICI_complex_statement.pdf
-│
-├── app.py                          # Main Streamlit app
-├── statement_parser.py             # Core routing logic
-│
-├── README.md                       # Documentation
-├── requirements.txt                # Python dependencies
-│
-└── (generated files)
-    ├── HDFC-credit-card-statement_transactions.csv
-    ├── ICICI_complex_statement_transactions.csv
-    ├── etc...
+
 
 # 💳 Multi-Bank Statement Parser
 
@@ -65,68 +38,125 @@ Supports multiple **Indian and international banks**, providing a unified dashbo
 
 ## 🖥️ Web Interface – How to Use
 
-1. **Run the App**
-   ```bash
-   streamlit run app.py
-Upload a Statement
+### 📤 Upload a Statement
+Click **Browse files** or drag and drop a `.pdf` bank statement.
 
-Click Browse files or drag and drop a .pdf bank statement.
+### 📈 View Results
+Summary cards show important details like **total amount due**, **payment received**, etc.
 
-View Results
+### 📋 Review Transactions
+All parsed transactions appear in a **sortable and filterable** table.
 
-Summary cards show important details like total amount due, payment received, etc.
+### 💾 Download CSV
+Export the transactions by clicking **Download CSV**.
 
-Review Transactions
+---
 
-All parsed transactions appear in a sortable and filterable table.
+## ⚙️ How It Works
 
-Download CSV
-
-Export the transactions by clicking Download CSV.
-
-⚙️ How It Works
-🧾 PDF Text Extraction
-
+### 🧾 PDF Text Extraction
 Uses multiple fallback methods for robust text reading:
+- `pdfplumber` — Primary extraction method for accurate results.
+- `PyPDF2` — Fallback for PDFs with layout issues.
+- **Raw reading** — Last resort for edge cases.
 
-pdfplumber — Primary extraction method for accurate results.
-
-PyPDF2 — Fallback for PDFs with layout issues.
-
-Raw reading — Last resort for edge cases.
-
-🔍 Bank Detection
-
+### 🔍 Bank Detection
 The parser auto-detects the bank by scanning for:
+- Bank names (e.g., *HDFC, ICICI, Axis, SBI, AMEX*)
+- Keywords (*Credit Card, Account, Statement*)
+- Unique formatting patterns
 
-Bank names (e.g., HDFC, ICICI, Axis, SBI, AMEX)
-
-Keywords (Credit Card, Account, Statement)
-
-Unique formatting patterns
-
-🧮 Transaction Parsing
-
+### 🧮 Transaction Parsing
 Each bank-specific parser:
+- Extracts **dates**, **descriptions**, and **amounts**
+- Detects **Debit/Credit** transactions
+- Calculates **summary totals**
+- Handles **multiple date formats**
+- Supports both **₹ and $** currency symbols
 
-Extracts dates, descriptions, and amounts
+---
 
-Detects Debit/Credit transactions
+## 📊 Extracted Data
 
-Calculates summary totals
+### Common Fields (All Banks)
+- Bank Name  
+- Statement Date / Period  
+- Total / Minimum Amount Due  
+- Transactions (Date, Description, Amount)
 
-Handles multiple date formats
+### Bank-Specific Fields
 
-Supports both ₹ and $ currency symbols
+| Bank | Unique Fields |
+|------|----------------|
+| **ICICI / Axis / HDFC** | Cardholder Name, Last 4 Digits, New Charges, Payment Received, Statement Balance |
+| **SBI** | Account Number, Branch, Opening/Closing Balance, Total Credits/Debits |
+| **AMEX** | Member Name, Account Number, Statement Period, Payments, New Charges |
 
-📊 Extracted Data
+---
 
-Common Fields (All Banks):
+## 📁 Project Structure
 
-Bank Name
+<img width="852" height="790" alt="image" src="https://github.com/user-attachments/assets/c15be588-6b2c-46f7-b01e-608f217a0441" />
 
-Statement Date / Period
 
-Total / Minimum Amount Due
 
-Transactions (Date, Description, Amount)
+---
+
+## 🧩 Error Handling
+
+The parser automatically handles:
+- Corrupted or password-protected PDFs  
+- Missing or inconsistent data  
+- Multiple date formats  
+- Currency symbol variations  
+
+If parsing fails, the app displays:
+- A **clear error message**
+- A **debug trace** for investigation
+- **Suggested troubleshooting** steps
+
+---
+
+## 🧠 Troubleshooting Guide
+
+### "Unsupported Bank"
+- Ensure the PDF is a valid statement  
+- Check if the bank name is in the supported list  
+- Try a cleaner, digital version of the PDF  
+
+### "No Transactions Detected"
+- Some PDFs use non-standard layouts  
+- Try a different extraction method or statement version  
+
+### "Missing Fields"
+- Some statements omit fields like “Minimum Amount Due”  
+- Missing fields are displayed as “—”
+
+---
+
+## 🧪 Sample Files
+
+Sample PDFs for testing are available under the `/samples` folder:
+- `391657900-SBI-statement-sample.pdf`
+- `Axis_complex_statement.pdf`
+- `HDFC-credit-card-statement.pdf`
+- `ICICI_complex_statement.pdf`
+- `amex_statement.pdf`
+
+---
+
+## 🔒 Security & Privacy
+
+- All processing is **local** — no data leaves your device.  
+- Temporary files are **auto-deleted** after use.  
+- CSV exports are **stored locally** only.  
+
+---
+
+## 🛠️ Installation
+
+### Step 1: Clone the Repository
+```bash
+git clone https://github.com/Abhinavj12/cc_statement_parser_ver2.git
+cd cc_statement_parser_ver2
+
