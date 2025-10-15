@@ -9,7 +9,7 @@ st.set_page_config(page_title="💳 Multi-Bank Statement Parser", layout="wide")
 
 st.title("💳 Multi-Bank Statement Parser")
 st.write("Upload a bank statement PDF to extract summary and transactions automatically.")
-st.write("**Supported Banks:** HDFC, SBI, (easily extensible to ICICI, Axis, etc.)")
+st.write("**Supported Banks:** ICICI, Axis, SBI")
 
 uploaded = st.file_uploader("📄 Upload a Bank Statement (PDF)", type=["pdf"])
 
@@ -23,7 +23,8 @@ if uploaded:
     with st.spinner("🔍 Parsing your PDF statement..."):
         try:
             result, transactions = parse_statement_file(pdf_path, export_csv=True)
-            st.success(f"✅ Parsed successfully! Bank detected: **{result.get('bank', 'Unknown')}**")
+            bank = result.get('bank', result.get('Bank', 'Unknown'))
+            st.success(f"✅ Parsed successfully! Bank detected: **{bank}**")
         except Exception as e:
             st.error(f"❌ Parsing failed: {e}")
             import traceback
@@ -35,30 +36,51 @@ if uploaded:
     with st.expander("🔧 DEBUG - Raw Extracted Data"):
         st.json(result)
 
-    # ---------------- Summary ----------------
+    # ============= SUMMARY SECTION =============
     st.subheader("📘 Summary")
 
-    bank = result.get('bank', 'Unknown')
+    bank = result.get('bank', result.get('Bank', 'Unknown'))
 
-    # Display bank-specific fields
-    if bank == "HDFC":
+    # ===== ICICI / AXIS Credit Card =====
+    if bank in ['ICICI', 'Axis']:
         col1, col2, col3 = st.columns(3)
 
         with col1:
             st.metric("🏦 Bank", bank)
-            card_holder = result.get('Card Holder Name', '—')
-            st.write("**👤 Card Holder:**", card_holder if card_holder else "❌ NOT EXTRACTED")
+            st.write("**💳 Card Name:**", result.get('Card Name', '—'))
 
         with col2:
-            st.write("**💳 Card Last 4:**", result.get('Card Last 4', '—'))
+            st.write("**🔢 Card Last 4:**", result.get('Card Last 4', '—'))
             st.write("**🗓️ Statement Date:**", result.get('Statement Date', '—'))
 
         with col3:
-            payment_due = result.get('Payment Due Date', '—')
-            st.write("**📅 Payment Due Date:**", payment_due if payment_due else "❌ NOT EXTRACTED")
-            st.write("**💰 Total Amount Due:**", result.get('Total Amount Due', '—'))
+            st.write("**📅 Payment Due:**", result.get('Payment Due Date', '—'))
+            st.write("**💰 Total Due:**", f"₹ {result.get('Total Amount Due', 0):,.2f}")
+            st.write("**💰 Min. Due:**", f"₹ {result.get('Minimum Amount Due', 0):,.2f}")
 
-    elif bank == "SBI":
+        # Account Summary Section
+        st.markdown("---")
+        st.subheader("💰 Account Summary")
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            prev_bal = result.get('Previous Balance', 0)
+            st.metric("Previous Balance", f"₹ {prev_bal:,.2f}")
+
+        with col2:
+            payment = result.get('Payment Received', 0)
+            st.metric("Payment Received", f"₹ {payment:,.2f}" if payment else "—")
+
+        with col3:
+            new_charges = result.get('New Charges', 0)
+            st.metric("New Charges", f"₹ {new_charges:,.2f}")
+
+        with col4:
+            stmt_bal = result.get('Statement Balance', 0)
+            st.metric("Statement Balance", f"₹ {stmt_bal:,.2f}")
+
+    # ===== SBI Savings Account =====
+    elif bank == 'SBI':
         col1, col2, col3 = st.columns(3)
 
         with col1:
@@ -90,10 +112,10 @@ if uploaded:
     else:
         st.info("Bank-specific display not configured. Showing raw data.")
         for key, value in result.items():
-            if key not in ('transactions_count', 'transactions_csv', 'bank'):
+            if key not in ('transactions_count', 'transactions_csv', 'bank', 'Bank'):
                 st.write(f"**{key}:**", value)
 
-    # ---------------- Transactions ----------------
+    # ============= TRANSACTIONS SECTION =============
     st.markdown("---")
     st.subheader(f"📊 Transactions ({result.get('transactions_count', 0)})")
 
@@ -111,7 +133,23 @@ if uploaded:
                     file_name=os.path.basename(csv_path),
                     mime="text/csv"
                 )
+
+        # Optional: Show statistics
+        if bank in ['ICICI', 'Axis']:
+            st.markdown("---")
+            st.subheader("📈 Transaction Analysis")
+            col1, col2 = st.columns(2)
+
+            total_debits = result.get('Total Debits', 0)
+            total_credits = result.get('Total Credits', 0)
+
+            with col1:
+                st.metric("Total Debits", f"₹ {total_debits:,.2f}")
+            with col2:
+                st.metric("Total Credits", f"₹ {total_credits:,.2f}")
+
     else:
         st.info("No transactions detected.")
+
 else:
     st.info("👆 Please upload a PDF to begin parsing.")

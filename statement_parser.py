@@ -5,6 +5,7 @@ from typing import List, Dict, Tuple
 # Import bank-specific parsers
 from parsers.hdfc_parser import HDFCParser
 from parsers.sbi_parser import SBIParser
+from parsers.credit_card_parser import CreditCardParser
 
 
 def extract_text_from_pdf(path: str) -> str:
@@ -43,11 +44,11 @@ def detect_bank(text: str) -> str:
     t = text.upper()
     if "HDFC" in t and ("CREDIT CARD" in t or "CARD NO" in t):
         return "HDFC"
-    if "STATE BANK OF INDIA" in t or "SBI" in t:
+    if "STATE BANK OF INDIA" in t or ("SBI" in t and "ACCOUNT" in t):
         return "SBI"
-    if "ICICI" in t:
+    if "ICICI BANK" in t and "CREDIT CARD" in t:
         return "ICICI"
-    if "AXIS" in t:
+    if "AXIS BANK" in t and "CREDIT CARD" in t:
         return "AXIS"
     if "AMERICAN EXPRESS" in t or "AMEX" in t:
         return "AMEX"
@@ -87,9 +88,14 @@ def parse_statement_file(path: str, export_csv: bool = True, csv_path: str = Non
         summary, transactions = parser.parse(text)
         result.update(summary)
 
+    elif bank in ["ICICI", "AXIS"]:
+        parser = CreditCardParser()
+        summary, transactions = parser.parse(text)
+        result.update(summary)
+
     # Add more banks here:
-    # elif bank == "ICICI":
-    #     parser = ICICIParser()
+    # elif bank == "AMEX":
+    #     parser = AMEXParser()
     #     summary, transactions = parser.parse(text)
     #     result.update(summary)
 
